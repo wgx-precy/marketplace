@@ -11,7 +11,7 @@ servers:
 paths:
   /merchants:
     post:
-      summary: '1: Register New Merchant'
+      summary: '1: POST New Merchant Registration'
       operationId: post-merchants
       responses:
         '200':
@@ -19,19 +19,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  url:
-                    type: string
-                    description: URL to navigate to in order to begin registration process
-                  is_already_registered:
-                    type: boolean
-                    description: When is_already_registered = false the client is expected to redirect the merchant to the url returned.
-                  merchant:
-                    $ref: '#/components/schemas/Merchant'
-                required:
-                  - is_already_registered
-                  - merchant
+                $ref: '#/components/schemas/Merchant'
       description: |-
         Starts asynchronous process of registering a new merchant with Lian Lian Global.  The returned URL is the URL the client must reirect the merchant to in order to being the Lian Lian Registration Experience.  When registration is successfully completed the user will be reirected back to `redirect_url`
 
@@ -272,10 +260,14 @@ components:
           type: string
         registration_status:
           $ref: '#/components/schemas/Registration-Status-Enumeration'
+        registration_url:
+          type: string
+          description: 'URL to redirect merchant to in order to start or continue registration.  '
       required:
         - id
         - client_id
         - status
+        - registration_status
     Payment:
       title: '| Payment'
       type: object
@@ -302,10 +294,11 @@ components:
 
         | Value | Description |
         |--------|------------|
-        | pending | Registration ongoing |
+        | redirect | Client should redirect user to Merchant.registration_url |
+        | ongoing | Registration ongoing |
         | need_info | Merchant must communicate with Lian Lian |
         | success | Ready for payments |
-        | fail | User has been blacklisted |
+        | failed | User has been blacklisted |
       enum:
         - pending
         - need_info
