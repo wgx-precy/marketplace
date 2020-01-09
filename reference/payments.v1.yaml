@@ -224,6 +224,107 @@ paths:
           description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in
       description: "Returns Total balance of client's account within Lian Lian in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CHN."
     parameters: []
+  /webhook:
+    get:
+      summary: 2. GET List of All Webhook Endpoints
+      tags:
+        - webhook
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Webhook-Endpoint'
+      operationId: get-webhook
+      description: Returns a list of your webhook endpoints
+    post:
+      summary: 1. POST Create Webhook Endpoint
+      operationId: post-webhook
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook-Endpoint'
+      description: 'A webhook endpoint must have a url and a list of enabled_events. You may optionally specify the Boolean connect parameter. If set to true, then a Connect webhook endpoint that notifies the specified url about events from all connected accounts is created; otherwise an account webhook endpoint that notifies the specified url only about events from your account is created. You can also create webhook endpoints in the webhooks settings section of the Dashboard.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                events:
+                  $ref: '#/components/schemas/Webhook-Events'
+                url:
+                  type: string
+                is_enabled:
+                  type: boolean
+                  description: Enabled or not - default is true
+              required:
+                - events
+                - url
+      tags:
+        - webhook
+  '/webhook/{webhook_id}':
+    parameters:
+      - schema:
+          type: string
+        name: webhook_id
+        in: path
+        required: true
+        description: ''
+    get:
+      summary: 3. GET Webhook Endpoint
+      tags:
+        - webhook
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook-Endpoint'
+      operationId: get-webhook-webhook_id
+      description: Retrieves the webhook endpoint with the given ID
+    delete:
+      summary: 4. DELETE Webhook Endpoint
+      operationId: delete-webhook-webhook_id
+      responses:
+        '200':
+          description: OK
+      description: ''
+      tags:
+        - webhook
+    put:
+      summary: ''
+      operationId: put-webhook-webhook_id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhook-Endpoint'
+      description: Edit a Webhook Endpoint
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                events:
+                  $ref: '#/components/schemas/Webhook-Events'
+                is_enabled:
+                  type: boolean
+                url:
+                  type: string
+      tags:
+        - webhook
 components:
   schemas:
     Merchant:
@@ -306,6 +407,8 @@ components:
         - success
         - fail
         - redirect
+      x-tags:
+        - merchants
     Payment-Status-Enumeration:
       type: string
       title: '| Payment Status Enumeration'
@@ -339,6 +442,54 @@ components:
         - code
         - message
       description: This object is returned anytime a REST request returns HTTP status other than 2xx.
+    Webhook-Endpoint:
+      title: '| Webhook Endpoint Object'
+      type: object
+      x-examples:
+        Example:
+          id: we_1Fya1E2eZvKYlo2COY23Yyij
+          created: 1578472560
+          enabled_events:
+            - payment.status
+            - merchant.status
+          is_live: false
+          is_enabled: true
+          url: 'https://example.com/my/webhook/endpoint'
+      description: ''
+      properties:
+        id:
+          type: string
+        created:
+          type: number
+          description: Time at which the object was created. Measured in seconds since the Unix epoch
+        enable_events:
+          type: array
+          description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
+          items:
+            type: string
+        is_enabled:
+          type: boolean
+          description: The status of the webhook. It can be enabled or disabled.
+        url:
+          type: string
+          description: The URL of the webhook endpoint
+      x-tags:
+        - webhook
+    Webhook-Events:
+      type: string
+      title: '| Webhook Events Enumeration'
+      enum:
+        - payment.status
+        - merchant.status
+      description: |-
+        List of events a client can sign up for Webhook calls.
+
+        | Value | Description |
+        |--|--|
+        | payment.status | Occurs whenever the status of a payment changes |
+        | merchant.status | Occurs whenever the status of a merhant changes |
+      x-tags:
+        - webhook
   securitySchemes:
     Authorization:
       name: Developer Token

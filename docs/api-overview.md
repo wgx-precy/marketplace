@@ -190,26 +190,26 @@ Stripe utilizes cursor-based pagination via the starting_after and ending_before
 
 #### Query Arguments
 
-Argument | Details | Description 
----------|----------|
- limit | optional, default is 10 | A limit on the number of objects to be returned, between 1 and 100.
- starting_after | optional | A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+| Argument | Details | Description |
+|---------|----------|-------------| 
+| limit | optional, default is 10 | A limit on the number of objects to be returned, between 1 and 100. |
+| starting_after | optional | A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list. |
 
 #### Paginated List Response Object
 
-Field | Type | Description 
----------|----------|
-data | array | An array containing the actual response elements, paginated by any request parameters.
-has_more | boolean | Whether or not there are more elements available after this set. If false, this set comprises the end of the list.
-starting_after | string | Next starting_after parameter to use for next page
-total | number | Total number of items in list
+| Field | Type | Description |
+| ---------|----------|-------|
+| data | array | An array containing the actual response elements, paginated by any request parameters. |
+| has_more | boolean | Whether or not there are more elements available after this set. If false, this set comprises the end of the list. |
+| starting_after | string | Next starting_after parameter to use for next page |
+| total | number | Total number of items in list |
 ```
 {
   "total": 252,
   "has_more": true,
   "staring_after": "token",
   "has_more": true,
-  "data": [
+  "list": [
     {
       "name": "Merchant Name"
     }
@@ -217,6 +217,8 @@ total | number | Total number of items in list
 }
 ```
 
-# Webhooks
+# Webhook Endpoints
+
+You can configure webhook endpoints via the API to be notified about events that happen in your Lian Lian Group account.
 
 
