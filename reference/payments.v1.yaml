@@ -1,0 +1,339 @@
+openapi: 3.0.0
+info:
+  title: Payments
+  version: '1.0'
+  description: The Lian Lian Global Payments API is designed for Marketplaces to link their accounts with Lian Lian merchant accounts and send them cross currency payments.
+servers:
+  - url: 'https://api.sandbox.lianlianglobal.com/payments/v1'
+    description: Production
+  - url: 'https://api.lianlianglobal.com/payments/v1'
+    description: Sandbox
+paths:
+  /merchants:
+    post:
+      summary: '1: Register New Merchant'
+      operationId: post-merchants
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL to navigate to in order to begin registration process
+                  is_already_registered:
+                    type: boolean
+                    description: When is_already_registered = false the client is expected to redirect the merchant to the url returned.
+                  merchant:
+                    $ref: '#/components/schemas/Merchant'
+                required:
+                  - is_already_registered
+                  - merchant
+      description: |-
+        Starts asynchronous process of registering a new merchant with Lian Lian Global.  The returned URL is the URL the client must reirect the merchant to in order to being the Lian Lian Registration Experience.  When registration is successfully completed the user will be reirected back to `redirect_url`
+
+        In the case a merchant doesn't finish the Registration Experience, this call will succeed next time with `is_already_registered = false` The client is expected to redirect the merchant to the Registration Experience once again.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                  description: Merchant ID as known by the client platform
+                store_name:
+                  type: string
+                  description: Store name as known by the calling platform
+                redirect_url:
+                  type: string
+                  description: 'URL LL will redirect to at the end of a successful registration process.  '
+                shop_url:
+                  type: string
+                  description: URL of merchant store if URL can’t be algorithmically produced from merchant_id
+                note:
+                  type: string
+                  description: Note to be used by customer support if needed
+              required:
+                - client_id
+                - store_name
+                - redirect_url
+      tags:
+        - merchants
+  '/merchants/{merchant_id}':
+    parameters:
+      - schema:
+          type: string
+        name: merchant_id
+        in: path
+        required: true
+        description: Lian Lian Merchant ID
+    get:
+      summary: '2: GET Merchant Status'
+      tags:
+        - merchants
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                    description: Client’s merchant ID
+                  id:
+                    type: string
+                    description: 'Merchant ID as known by Lian Lian '
+                  status:
+                    type: string
+                    enum:
+                      - active
+                      - inactive
+                    description: If merchant is active they are in some stage of registration_status
+                  registartion_status:
+                    type: string
+                    description: |
+                      Describes where merchant is in registration process.  One of
+
+                      * pending    Registration ongoing
+                      * need_info  Merchant must communicate with LL
+                      * success    Ready for payments
+                      * fail       User has been blacklisted
+                    enum:
+                      - in_progress
+                      - need_registration
+                      - success
+                      - fail
+                required:
+                  - client_id
+                  - id
+                  - status
+      operationId: get-merchants-merchant.id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchant'
+      description: Get information about the merchant - in particular their status in the Lian Lian Platform and status for the registration process.
+  '/merchants/client_id/{client_id}':
+    parameters:
+      - type: string
+        name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Client ID for a Merchant that has alraedy begun registration
+    get:
+      summary: '3: GET Merchant Status by Client ID'
+      tags:
+        - merchants
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
+      operationId: get-merchants-lookup-client_id
+      description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status in the Lian Lian Platform and status for the registration process."
+      requestBody: {}
+  '/merchants/{merchant_id}/payments':
+    parameters:
+      - type: string
+        name: merchant_id
+        in: path
+        required: true
+        description: Lian Lian Merchant ID
+        schema:
+          type: string
+    post:
+      summary: '1: POST Payment to Merchant'
+      operationId: post-merchants-merchant_id-payments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call only guarantees the HOLD for the money on the caller’s account was done.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Put HOLD** on money in caller’s account\n  Can fail from insufficient funds\n* **Verify Payee Registration** information is valid\n  If Payee is unknown fails instantly\n  If Payee kyc_status is fail (blacklisted), fails instantly \n  If KYC process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise offline process happens to fix issues and make transfer\n"
+      tags:
+        - payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_payment_id:
+                  type: string
+                  description: Unique key for this payment.  Repeat payment for this ID fails.
+                currency:
+                  type: string
+                  description: 3 letter code of payment currency
+                amount:
+                  type: number
+                  description: Amount to pay merchant
+                note:
+                  type: string
+                  description: Additional information to help track payment
+              required:
+                - client_payment_id
+                - currency
+                - amount
+  '/merchants/{merchant_id}/payments/{payment_id}':
+    parameters:
+      - type: string
+        name: merchant_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Lian Lian Merchant ID
+      - type: string
+        name: payment_id
+        in: path
+        required: true
+        description: Lian Lian Payment ID
+        schema:
+          type: string
+    get:
+      summary: '2: GET Payment Status'
+      tags:
+        - payments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+      operationId: get-merchants-merchant_id-payments-payment_id
+      requestBody: {}
+      description: Get Payment Status details for a payment to a specific merchant
+  /payments/v1/balance:
+    get:
+      summary: '1: GET Balance'
+      tags:
+        - balance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                      description: 3 letter currency code
+                    balance:
+                      type: string
+                      description: Total balance for this currency
+                  required:
+                    - currency
+                    - balance
+      operationId: get-balance
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: currency
+          description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in
+      description: "Returns Total balance of client's account within Lian Lian in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CHN."
+    parameters: []
+components:
+  schemas:
+    Merchant:
+      title: '| Merchant Status Object'
+      type: object
+      x-tags:
+        - merchants
+      description: ''
+      properties:
+        id:
+          type: string
+          description: Lian Lian ID of Merchant
+        client_id:
+          type: string
+          description: "Client's ID for this Merchant"
+        status:
+          enum:
+            - active
+            - inactive
+          type: string
+        registration_status:
+          $ref: '#/components/schemas/Registration-Status-Enumeration'
+      required:
+        - id
+        - client_id
+        - status
+    Payment:
+      title: '| Payment'
+      type: object
+      description: 'Payment object, today focused around payment status'
+      x-tags:
+        - payments
+      properties:
+        id:
+          type: string
+        client_id:
+          type: string
+          description: Payment ID according to client
+        payment_status:
+          $ref: '#/components/schemas/Payment-Status-Enumeration'
+      required:
+        - id
+        - client_id
+        - payment_status
+    Registration-Status-Enumeration:
+      type: string
+      title: '| Registration Status Enumeration'
+      description: |-
+        State of merchant registration process.  One of:
+
+        | Value | Description |
+        |--------|------------|
+        | pending | Registration ongoing |
+        | need_info | Merchant must communicate with Lian Lian |
+        | success | Ready for payments |
+        | fail | User has been blacklisted |
+      enum:
+        - pending
+        - need_info
+        - success
+        - fail
+      x-tags:
+        - merchants
+    Payment-Status-Enumeration:
+      type: string
+      title: '| Payment Status Enumeration'
+      description: |-
+        State a Payment is in.  One of:
+
+        | Value | Description |
+        |--------|------------|
+        | in_progress | Payment ongoing normally |
+        | need_info | Merchant must communicate with Lian Lian |
+        | success | Payment complete |
+        | returned | Money returned to client |
+      enum:
+        - in_progress
+        - need_info
+        - success
+        - returned
+      x-tags:
+        - payments
+  securitySchemes:
+    Authorization:
+      name: Developer Token
+      type: apiKey
+      in: header
