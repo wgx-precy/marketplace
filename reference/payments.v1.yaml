@@ -57,7 +57,7 @@ paths:
         required: true
         description: Lian Lian Merchant ID
     get:
-      summary: Get Merchant Status
+      summary: Get Merchant
       tags:
         - Merchants
       responses:
@@ -80,7 +80,7 @@ paths:
           type: string
         description: Client ID for a Merchant that has alraedy begun registration
     get:
-      summary: Get Merchant Status by Client ID
+      summary: Get Merchant by Client ID
       tags:
         - Merchants
       responses:
