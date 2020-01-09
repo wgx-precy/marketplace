@@ -14,7 +14,7 @@ https://api.lianlianglobal.com/payments/v1/...
 
 # Authentication
 
-The LianLian API uses an API key to authenticate requests. You will receive your `token` from LianLian Global.  The ‘Authorization’ header must be included in all requests with the following format:
+The LianLian API uses an API key to authenticate requests. You will receive your `token` from LianLian Global.  The `Authorization` header must be included in all requests with the following format:
 
 ```
 Authorization: Basic {token}
