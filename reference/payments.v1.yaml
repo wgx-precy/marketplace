@@ -227,8 +227,6 @@ paths:
   /webhook:
     get:
       summary: 2. GET List of All Webhook Endpoints
-      tags:
-        - webhook
       responses:
         '200':
           description: OK
@@ -240,6 +238,8 @@ paths:
                   $ref: '#/components/schemas/Webhook-Endpoint'
       operationId: get-webhook
       description: Returns a list of your webhook endpoints
+      tags:
+        - webhook endpoints
     post:
       summary: 1. POST Create Webhook Endpoint
       operationId: post-webhook
@@ -268,7 +268,7 @@ paths:
                 - events
                 - url
       tags:
-        - webhook
+        - webhook endpoints
   '/webhook/{webhook_id}':
     parameters:
       - schema:
@@ -279,8 +279,6 @@ paths:
         description: ''
     get:
       summary: 3. GET Webhook Endpoint
-      tags:
-        - webhook
       responses:
         '200':
           description: OK
@@ -290,17 +288,19 @@ paths:
                 $ref: '#/components/schemas/Webhook-Endpoint'
       operationId: get-webhook-webhook_id
       description: Retrieves the webhook endpoint with the given ID
+      tags:
+        - webhook endpoints
     delete:
-      summary: 4. DELETE Webhook Endpoint
+      summary: 5. DELETE Webhook Endpoint
       operationId: delete-webhook-webhook_id
       responses:
         '200':
           description: OK
       description: ''
       tags:
-        - webhook
+        - webhook endpoints
     put:
-      summary: ''
+      summary: 4. PUT Modify Webhook Endpoint
       operationId: put-webhook-webhook_id
       responses:
         '200':
@@ -324,7 +324,7 @@ paths:
                 url:
                   type: string
       tags:
-        - webhook
+        - webhook endpoints
 components:
   schemas:
     Merchant:
@@ -474,7 +474,7 @@ components:
           type: string
           description: The URL of the webhook endpoint
       x-tags:
-        - webhook
+        - webhook endpoints
     Webhook-Events:
       type: string
       title: '| Webhook Events Enumeration'
@@ -489,7 +489,7 @@ components:
         | payment.status | Occurs whenever the status of a payment changes |
         | merchant.status | Occurs whenever the status of a merhant changes |
       x-tags:
-        - webhook
+        - webhook endpoints
   securitySchemes:
     Authorization:
       name: Developer Token
