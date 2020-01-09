@@ -11,7 +11,7 @@ servers:
 paths:
   /merchants:
     post:
-      summary: '1: POST New Merchant Registration'
+      summary: Start New Merchant Registration
       operationId: post-merchants
       responses:
         '200':
@@ -60,7 +60,7 @@ paths:
         required: true
         description: Lian Lian Merchant ID
     get:
-      summary: '2: GET Merchant Status'
+      summary: Get Merchant Status
       tags:
         - merchants
       responses:
@@ -87,7 +87,7 @@ paths:
           type: string
         description: Client ID for a Merchant that has alraedy begun registration
     get:
-      summary: '3: GET Merchant Status by Client ID'
+      summary: Get Merchant Status by Client ID
       tags:
         - merchants
       responses:
@@ -110,7 +110,7 @@ paths:
         schema:
           type: string
     post:
-      summary: '1: POST Payment to Merchant'
+      summary: Send Payment to Merchant
       operationId: post-merchants-merchant_id-payments
       responses:
         '200':
@@ -178,7 +178,7 @@ paths:
         schema:
           type: string
     get:
-      summary: '2: GET Payment Status'
+      summary: Get Payment Status
       tags:
         - payments
       responses:
@@ -193,7 +193,7 @@ paths:
       description: Get Payment Status details for a payment to a specific merchant
   /payments/v1/balance:
     get:
-      summary: '1: GET Balance'
+      summary: Get Client Balance
       tags:
         - balance
       responses:
@@ -226,7 +226,7 @@ paths:
     parameters: []
   /webhook:
     get:
-      summary: 2. GET List of All Webhook Endpoints
+      summary: List All Webhook Endpoints
       responses:
         '200':
           description: OK
@@ -241,7 +241,7 @@ paths:
       tags:
         - webhook endpoints
     post:
-      summary: 1. POST Create Webhook Endpoint
+      summary: Create Webhook Endpoint
       operationId: post-webhook
       responses:
         '200':
@@ -278,7 +278,7 @@ paths:
         required: true
         description: ''
     get:
-      summary: 3. GET Webhook Endpoint
+      summary: Get Webhook Endpoint
       responses:
         '200':
           description: OK
@@ -291,7 +291,7 @@ paths:
       tags:
         - webhook endpoints
     delete:
-      summary: 5. DELETE Webhook Endpoint
+      summary: Delete Webhook Endpoint
       operationId: delete-webhook-webhook_id
       responses:
         '200':
@@ -300,7 +300,7 @@ paths:
       tags:
         - webhook endpoints
     put:
-      summary: 4. PUT Modify Webhook Endpoint
+      summary: Modify Webhook Endpoint
       operationId: put-webhook-webhook_id
       responses:
         '200':
