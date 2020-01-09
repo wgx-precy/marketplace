@@ -20,10 +20,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Merchant'
-      description: |-
-        Starts asynchronous process of registering a new merchant with Lian Lian Global.  The returned URL is the URL the client must reirect the merchant to in order to being the Lian Lian Registration Experience.  When registration is successfully completed the user will be reirected back to `redirect_url`
-
-        In the case a merchant doesn't finish the Registration Experience, this call will succeed next time with `is_already_registered = false` The client is expected to redirect the merchant to the Registration Experience once again.
+      description: "Starts asynchronous process of registering a new merchant with Lian Lian Global.  \n\nOn successful return, the Merchant object `status` will be `redirect` and `redirect_url` the URL the client must redirect the merchant to in order to begin the Lian Lian Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
       requestBody:
         content:
           application/json:
@@ -76,7 +73,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Merchant'
-      description: Get information about the merchant - in particular their status in the Lian Lian Platform and status for the registration process.
+      description: Get information about the merchant - in particular their status on the Lian Lian Platform.
   '/merchants/client_id/{client_id}':
     parameters:
       - type: string
@@ -98,7 +95,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Merchant'
       operationId: get-merchants-lookup-client_id
-      description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status in the Lian Lian Platform and status for the registration process."
+      description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status on the Lian Lian Platform."
       requestBody: {}
   '/merchants/{merchant_id}/payments':
     parameters:
@@ -132,7 +129,7 @@ paths:
                 $ref: '#/components/schemas/Error'
               examples:
                 example-1: {}
-      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n"
+      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
       tags:
         - payments
       requestBody:
@@ -178,7 +175,7 @@ paths:
         schema:
           type: string
     get:
-      summary: Get Payment Status
+      summary: Get Payment
       tags:
         - payments
       responses:
@@ -190,7 +187,7 @@ paths:
                 $ref: '#/components/schemas/Payment'
       operationId: get-merchants-merchant_id-payments-payment_id
       requestBody: {}
-      description: Get Payment Status details for a payment to a specific merchant
+      description: "Get a Merchant's specific Payment Object including payment status."
   /payments/v1/balance:
     get:
       summary: Get Client Balance
@@ -333,6 +330,8 @@ components:
       x-tags:
         - merchants
       description: Merchant object today focused on registration status
+      x-examples:
+        example-1: {}
       properties:
         id:
           type: string
@@ -347,6 +346,7 @@ components:
           description: 'URL to redirect merchant to in order to start or continue registration.  '
         can_make_payment:
           type: boolean
+          description: Should client initiate payments to this merchant or not.  This is false only for status=blocked
         shop_url:
           type: string
         note:
@@ -356,8 +356,6 @@ components:
         - client_id
         - status
         - can_make_payment
-      x-examples:
-        example-1: {}
     Payment:
       title: '| Payment Object'
       type: object
