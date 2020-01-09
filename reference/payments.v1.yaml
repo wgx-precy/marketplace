@@ -69,38 +69,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  client_id:
-                    type: string
-                    description: Client’s merchant ID
-                  id:
-                    type: string
-                    description: 'Merchant ID as known by Lian Lian '
-                  status:
-                    type: string
-                    enum:
-                      - active
-                      - inactive
-                    description: If merchant is active they are in some stage of registration_status
-                  registartion_status:
-                    type: string
-                    description: |
-                      Describes where merchant is in registration process.  One of
-
-                      * pending    Registration ongoing
-                      * need_info  Merchant must communicate with LL
-                      * success    Ready for payments
-                      * fail       User has been blacklisted
-                    enum:
-                      - in_progress
-                      - need_registration
-                      - success
-                      - fail
-                required:
-                  - client_id
-                  - id
-                  - status
+                $ref: '#/components/schemas/Merchant'
       operationId: get-merchants-merchant.id
       requestBody:
         content:
@@ -150,7 +119,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Payment'
-      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call only guarantees the HOLD for the money on the caller’s account was done.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Put HOLD** on money in caller’s account\n  Can fail from insufficient funds\n* **Verify Payee Registration** information is valid\n  If Payee is unknown fails instantly\n  If Payee kyc_status is fail (blacklisted), fails instantly \n  If KYC process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise offline process happens to fix issues and make transfer\n"
+        '402':
+          description: |-
+            Codes:
+
+            | Code | Description |
+            |------|------------|
+            | 10004 | Insufficient funds |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n"
       tags:
         - payments
       requestBody:
@@ -159,7 +139,10 @@ paths:
             schema:
               type: object
               properties:
-                client_payment_id:
+                id:
+                  type: string
+                  description: Lian Lian Payment ID
+                client_id:
                   type: string
                   description: Unique key for this payment.  Repeat payment for this ID fails.
                 currency:
@@ -172,7 +155,8 @@ paths:
                   type: string
                   description: Additional information to help track payment
               required:
-                - client_payment_id
+                - id
+                - client_id
                 - currency
                 - amount
   '/merchants/{merchant_id}/payments/{payment_id}':
@@ -241,7 +225,7 @@ paths:
 components:
   schemas:
     Merchant:
-      title: '| Merchant Status Object'
+      title: '| Merchant Object'
       type: object
       x-tags:
         - merchants
@@ -254,22 +238,23 @@ components:
           type: string
           description: "Client's ID for this Merchant"
         status:
-          enum:
-            - active
-            - inactive
-          type: string
-        registration_status:
           $ref: '#/components/schemas/Registration-Status-Enumeration'
         registration_url:
           type: string
           description: 'URL to redirect merchant to in order to start or continue registration.  '
+        can_make_payment:
+          type: boolean
+        shop_url:
+          type: string
+        note:
+          type: string
       required:
         - id
         - client_id
         - status
-        - registration_status
+        - can_make_payment
     Payment:
-      title: '| Payment'
+      title: '| Payment Object'
       type: object
       description: 'Payment object, today focused around payment status'
       x-tags:
@@ -280,12 +265,24 @@ components:
         client_id:
           type: string
           description: Payment ID according to client
-        payment_status:
+        status:
           $ref: '#/components/schemas/Payment-Status-Enumeration'
+        currency:
+          type: string
+          description: 3 letter code of currency used
+        amount:
+          type: string
+          description: Amount of payment in currency
+        note:
+          type: string
+          description: Note passed in for payment on POST
       required:
         - id
         - client_id
-        - payment_status
+        - status
+        - currency
+        - amount
+        - note
     Registration-Status-Enumeration:
       type: string
       title: '| Registration Status Enumeration'
@@ -297,15 +294,14 @@ components:
         | redirect | Client should redirect user to Merchant.registration_url |
         | ongoing | Registration ongoing |
         | need_info | Merchant must communicate with Lian Lian |
-        | success | Ready for payments |
-        | failed | User has been blacklisted |
+        | success | Ready for delivery money to merchant |
+        | blocked | User has been blacklisted from receiving payments |
       enum:
         - pending
         - need_info
         - success
         - fail
-      x-tags:
-        - merchants
+        - redirect
     Payment-Status-Enumeration:
       type: string
       title: '| Payment Status Enumeration'
@@ -314,10 +310,10 @@ components:
 
         | Value | Description |
         |--------|------------|
-        | in_progress | Payment ongoing normally |
-        | need_info | Merchant must communicate with Lian Lian |
-        | success | Payment complete |
-        | returned | Money returned to client |
+        | ongoing | Money Debited. Payment ongoing normally |
+        | need_info | Money Debited. Merchant must communicate with Lian Lian |
+        | success | Money Debited. Payment complete |
+        | returned | Money Returned to client account |
       enum:
         - in_progress
         - need_info
@@ -325,6 +321,20 @@ components:
         - returned
       x-tags:
         - payments
+    Error:
+      title: Error
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code as described per API
+        message:
+          type: string
+          description: Human readable message of error
+      required:
+        - code
+        - message
+      description: This object is returned anytime a REST request returns HTTP status other than 2xx.
   securitySchemes:
     Authorization:
       name: Developer Token
