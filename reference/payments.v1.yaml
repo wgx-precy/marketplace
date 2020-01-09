@@ -130,6 +130,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                example-1: {}
       description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n"
       tags:
         - payments
@@ -229,7 +231,7 @@ components:
       type: object
       x-tags:
         - merchants
-      description: ''
+      description: Merchant object today focused on registration status
       properties:
         id:
           type: string
@@ -253,10 +255,12 @@ components:
         - client_id
         - status
         - can_make_payment
+      x-examples:
+        example-1: {}
     Payment:
       title: '| Payment Object'
       type: object
-      description: 'Payment object, today focused around payment status'
+      description: Payment object containing payment status
       x-tags:
         - payments
       properties:
