@@ -47,7 +47,7 @@ paths:
                 - store_name
                 - redirect_url
       tags:
-        - merchants
+        - Merchants
   '/merchants/{merchant_id}':
     parameters:
       - schema:
@@ -59,7 +59,7 @@ paths:
     get:
       summary: Get Merchant Status
       tags:
-        - merchants
+        - Merchants
       responses:
         '200':
           description: OK
@@ -86,7 +86,7 @@ paths:
     get:
       summary: Get Merchant Status by Client ID
       tags:
-        - merchants
+        - Merchants
       responses:
         '200':
           description: OK
@@ -131,7 +131,7 @@ paths:
                 example-1: {}
       description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
       tags:
-        - payments
+        - Payments
       requestBody:
         content:
           application/json:
@@ -177,7 +177,7 @@ paths:
     get:
       summary: Get Payment
       tags:
-        - payments
+        - Payments
       responses:
         '200':
           description: OK
@@ -192,7 +192,7 @@ paths:
     get:
       summary: Get Client Balance
       tags:
-        - balance
+        - Balance
       responses:
         '200':
           description: OK
@@ -211,7 +211,7 @@ paths:
                       description: Total balance for this currency
                   required:
                     - currency
-                    - balance
+                    - Balance
       operationId: get-balance
       parameters:
         - schema:
@@ -236,7 +236,7 @@ paths:
       operationId: get-webhook
       description: Returns a list of your webhook endpoints
       tags:
-        - webhook endpoints
+        - Webhook Endpoints
     post:
       summary: Create Webhook Endpoint
       operationId: post-webhook
@@ -265,7 +265,7 @@ paths:
                 - events
                 - url
       tags:
-        - webhook endpoints
+        - Webhook Endpoints
   '/webhook/{webhook_id}':
     parameters:
       - schema:
@@ -286,7 +286,7 @@ paths:
       operationId: get-webhook-webhook_id
       description: Retrieves the webhook endpoint with the given ID
       tags:
-        - webhook endpoints
+        - Webhook Endpoints
     delete:
       summary: Delete Webhook Endpoint
       operationId: delete-webhook-webhook_id
@@ -295,7 +295,7 @@ paths:
           description: OK
       description: ''
       tags:
-        - webhook endpoints
+        - Webhook Endpoints
     put:
       summary: Modify Webhook Endpoint
       operationId: put-webhook-webhook_id
@@ -321,14 +321,14 @@ paths:
                 url:
                   type: string
       tags:
-        - webhook endpoints
+        - Webhook Endpoints
 components:
   schemas:
     Merchant:
       title: '| Merchant Object'
       type: object
       x-tags:
-        - merchants
+        - Merchants
       description: Merchant object today focused on registration status
       x-examples:
         example-1: {}
@@ -361,7 +361,7 @@ components:
       type: object
       description: Payment object containing payment status
       x-tags:
-        - payments
+        - Payments
       properties:
         id:
           type: string
@@ -406,7 +406,7 @@ components:
         - fail
         - redirect
       x-tags:
-        - merchants
+        - Merchants
     Payment-Status-Enumeration:
       type: string
       title: '| Payment Status Enumeration'
@@ -425,7 +425,7 @@ components:
         - success
         - returned
       x-tags:
-        - payments
+        - Payments
     Error:
       title: '| Error'
       type: object
@@ -472,7 +472,7 @@ components:
           type: string
           description: The URL of the webhook endpoint
       x-tags:
-        - webhook endpoints
+        - Webhook Endpoints
     Webhook-Events:
       type: string
       title: '| Webhook Events Enumeration'
@@ -487,7 +487,7 @@ components:
         | payment.status | Occurs whenever the status of a payment changes |
         | merchant.status | Occurs whenever the status of a merhant changes |
       x-tags:
-        - webhook endpoints
+        - Webhook Endpoints
   securitySchemes:
     Authorization:
       name: Developer Token
