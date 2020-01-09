@@ -326,7 +326,7 @@ components:
       x-tags:
         - payments
     Error:
-      title: Error
+      title: '| Error'
       type: object
       properties:
         code:
