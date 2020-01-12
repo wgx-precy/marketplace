@@ -688,7 +688,7 @@ paths:
       operationId: get-merchants-merchant_id-payments-payment_id
       requestBody: {}
       description: "Get a Merchant's Payment Object including status."
-  '/merchants/{merchant_id}/payments/{client_id}':
+  '/merchants/{merchant_id}/payments/client_id/{client_id}':
     parameters:
       - type: string
         name: merchant_id
@@ -722,7 +722,7 @@ paths:
                     currency: USD
                     amount: '19.85'
                     note: rfb
-      operationId: get-merchants-merchant_id-payments-client_id
+      operationId: get-merchants-merchant_id-payments-clientid-client_id
       requestBody: {}
       description: "Get a Merchant's Payment Object including status by Client's Payment ID."
 components:
