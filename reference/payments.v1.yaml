@@ -20,7 +20,83 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Merchant'
-      description: "Starts asynchronous process of registering a new merchant with Lian Lian Global.  \n\nOn successful return, the Merchant object `status` will be `redirect` and `redirect_url` the URL the client must redirect the merchant to in order to begin the Lian Lian Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
+              examples:
+                example-1:
+                  value:
+                    registration_url: 'https://example.lianlianpay.com/register/SADIS1FYOAWEBRAILKRYF32'
+                    shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
+                    note: test shope
+                    registration_status: false
+                    shop_name: dingdong
+                    client_id: C28E07DA61381ECD
+                    status: null
+                    id: null
+                example-2:
+                  value:
+                    registration_url: null
+                    shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
+                    note: test shope
+                    registration_status: true
+                    shop_name: dingdong
+                    id: '8000002020101011234'
+                    client_id: C28E07DA61381ECD
+                    status: success
+        '400':
+          description: |-
+            Codes:
+
+            | Code | Description |
+            |------|------------|
+            |999995 | Invalid Parameter|
+          content:
+            application/json:
+              schema:
+                title: '| Error'
+                type: object
+                description: |
+                  This object is returned anytime a REST request returns HTTP status other than 2xx.
+                x-examples: {}
+                properties:
+                  code:
+                    type: string
+                    description: Error code as described per API
+                    enum:
+                      - '154008'
+                      - '154011'
+                      - '154012'
+                      - '154014'
+                      - '154015'
+                      - '154016'
+                      - '154020'
+                      - '400001'
+                      - '400002'
+                      - '400003'
+                      - '400004'
+                      - '400005'
+                      - '400006'
+                      - '401001'
+                      - '401002'
+                      - '401003'
+                      - '401004'
+                      - '401005'
+                      - '403001'
+                      - '403002'
+                      - '403003'
+                      - '404001'
+                      - '404002'
+                      - '500000'
+                  message:
+                    type: string
+                    description: Human readable message of error
+                required:
+                  - code
+                  - message
+              examples:
+                example-1:
+                  value:
+                    code: '999995'
+                    message: '[mercnant_id] is requried.'
+      description: "Starts asynchronous process of registering a new merchant with Lianlian Pay.  \n\nOn successful return, if `registration_status` is `false`, platform shall use `registration_url` to redirect the merchant to in order to begin the Lianlian Pay Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
       requestBody:
         content:
           application/json:
@@ -35,7 +111,7 @@ paths:
                   description: Store name as known by the calling platform
                 redirect_url:
                   type: string
-                  description: 'URL LL will redirect to at the end of a successful registration process.  '
+                  description: 'URL Lianlina Pay will redirect to at the end of a successful registration process.  '
                 shop_url:
                   type: string
                   description: URL of merchant store if URL can’t be algorithmically produced from merchant_id
@@ -67,9 +143,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Merchant'
+              examples:
+                example-1:
+                  value:
+                    registration_url: null
+                    shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
+                    note: test shope
+                    registration_status: true
+                    shop_name: dingdong
+                    id: '8000002020101011234'
+                    client_id: C28E07DA61381ECD
+                    status: success
       operationId: get-merchants-merchant.id
       requestBody: {}
-      description: Get information about the merchant - in particular their status on the Lian Lian Platform.
+      description: Get information about the merchant - in particular their status on the Lianlian Pay platform.
   '/merchants/client_id/{client_id}':
     parameters:
       - type: string
@@ -90,8 +177,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Merchant'
+              examples:
+                example-1:
+                  value:
+                    registration_url: null
+                    shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
+                    note: test shope
+                    registration_status: true
+                    shop_name: dingdong
+                    id: '8000002020101011234'
+                    client_id: C28E07DA61381ECD
+                    status: success
       operationId: get-merchants-lookup-client_id
-      description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status on the Lian Lian Platform."
+      description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status on the Lianlian Pay platform."
       requestBody: {}
   '/merchants/{merchant_id}/payments':
     parameters:
@@ -112,20 +210,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Payment'
-        '402':
+              examples:
+                example-1:
+                  value:
+                    client_id: DIYE8DFYAU62ALSDOE
+                    status: ongoing
+                    currency: USD
+                    amount: '19.85'
+                    note: rfb
+        '400':
           description: |-
             Codes:
 
             | Code | Description |
             |------|------------|
-            | 10004 | Insufficient funds |
+            |154008 | Client has insufficient balance to pay merchant|
+            |154011 | Currency not supported|
+            |154015 | Duplicate payment `client_id`|
+            |?????? | Invalid `merchant_id`|
+            |?????? | Merchant is blocked from receiving payments|
+            |999995 | Invalid Parameter|
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                title: '| Error'
+                type: object
+                description: |
+                  This object is returned anytime a REST request returns HTTP status other than 2xx.
+                x-examples: {}
+                properties:
+                  code:
+                    type: string
+                    description: Error code as described per API
+                    enum:
+                      - '154008'
+                      - '154011'
+                      - '154012'
+                      - '154014'
+                      - '154015'
+                      - '154016'
+                      - '154020'
+                      - '400001'
+                      - '400002'
+                      - '400003'
+                      - '400004'
+                      - '400005'
+                      - '400006'
+                      - '401001'
+                      - '401002'
+                      - '401003'
+                      - '401004'
+                      - '401005'
+                      - '403001'
+                      - '403002'
+                      - '403003'
+                      - '404001'
+                      - '404002'
+                      - '500000'
+                  message:
+                    type: string
+                    description: Human readable message of error
+                required:
+                  - code
+                  - message
               examples:
-                example-1: {}
-      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant registration status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to target bank account\n  If any issues arise, customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
+                example-1:
+                  value:
+                    code: '154008'
+                    message: Insufficient balance of client.
+      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to merchant\n  If any issues arise, Lianlian Pay customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
       tags:
         - Payments
       requestBody:
@@ -134,12 +287,9 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  type: string
-                  description: Lian Lian Payment ID
                 client_id:
                   type: string
-                  description: Unique key for this payment.  Repeat payment for this ID fails.
+                  description: Payment ID according to client
                 currency:
                   type: string
                   description: 3 letter code of payment currency
@@ -150,41 +300,11 @@ paths:
                   type: string
                   description: Additional information to help track payment
               required:
-                - id
                 - client_id
                 - currency
                 - amount
-  '/merchants/{merchant_id}/payments/{payment_id}':
-    parameters:
-      - type: string
-        name: merchant_id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: Lian Lian Merchant ID
-      - type: string
-        name: payment_id
-        in: path
-        required: true
-        description: Lian Lian Payment ID
-        schema:
-          type: string
-    get:
-      summary: Get Payment
-      tags:
-        - Payments
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Payment'
-      operationId: get-merchants-merchant_id-payments-payment_id
-      requestBody: {}
-      description: "Get a Merchant's specific Payment Object including payment status."
-  /payments/v1/balance:
+        description: ''
+  /balance:
     get:
       summary: Get Client Balance
       tags:
@@ -208,14 +328,77 @@ paths:
                   required:
                     - currency
                     - Balance
+              examples:
+                example-1:
+                  value:
+                    - currency: USD
+                      balance: '4182.28'
+                    - currency: CNY
+                      balance: '78.99'
+        '400':
+          description: |-
+            Codes:
+
+            | Code | Description |
+            |------|------------|
+            |154011 | Currency not supported|
+            |999995 | Invalid Parameter|
+          content:
+            application/json:
+              schema:
+                title: '| Error'
+                type: object
+                description: |
+                  This object is returned anytime a REST request returns HTTP status other than 2xx.
+                x-examples: {}
+                properties:
+                  code:
+                    type: string
+                    description: Error code as described per API
+                    enum:
+                      - '154008'
+                      - '154011'
+                      - '154012'
+                      - '154014'
+                      - '154015'
+                      - '154016'
+                      - '154020'
+                      - '400001'
+                      - '400002'
+                      - '400003'
+                      - '400004'
+                      - '400005'
+                      - '400006'
+                      - '401001'
+                      - '401002'
+                      - '401003'
+                      - '401004'
+                      - '401005'
+                      - '403001'
+                      - '403002'
+                      - '403003'
+                      - '404001'
+                      - '404002'
+                      - '500000'
+                  message:
+                    type: string
+                    description: Human readable message of error
+                required:
+                  - code
+                  - message
+              examples:
+                example-1:
+                  value:
+                    code: '154011'
+                    message: Currency not support.
       operationId: get-balance
       parameters:
         - schema:
             type: string
           in: query
           name: currency
-          description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in
-      description: "Returns Total balance of client's account within Lian Lian in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CHN."
+          description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in.
+      description: "Returns Total balance of client's account within Lianlian Pay in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CNY."
     parameters: []
   /webhook:
     get:
@@ -228,7 +411,38 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Webhook-Endpoint'
+                  title: '| Webhook Endpoint Object'
+                  type: object
+                  x-examples:
+                    Example:
+                      id: we_1Fya1E2eZvKYlo2COY23Yyij
+                      created: 1578472560
+                      enabled_events:
+                        - payment.status
+                        - merchant.status
+                      is_live: false
+                      is_enabled: true
+                      url: 'https://example.com/my/webhook/endpoint'
+                  description: ''
+                  properties:
+                    id:
+                      type: string
+                    created:
+                      type: number
+                      description: Time at which the object was created. Measured in seconds since the Unix epoch
+                    enable_events:
+                      type: array
+                      description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
+                      items:
+                        type: string
+                    is_enabled:
+                      type: boolean
+                      description: The status of the webhook. It can be enabled or disabled.
+                    url:
+                      type: string
+                      description: The URL of the webhook endpoint
+                  x-tags:
+                    - Webhook Endpoints
       operationId: get-webhook
       description: Returns a list of your webhook endpoints
       tags:
@@ -242,7 +456,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Webhook-Endpoint'
+                title: '| Webhook Endpoint Object'
+                type: object
+                x-examples:
+                  Example:
+                    id: we_1Fya1E2eZvKYlo2COY23Yyij
+                    created: 1578472560
+                    enabled_events:
+                      - payment.status
+                      - merchant.status
+                    is_live: false
+                    is_enabled: true
+                    url: 'https://example.com/my/webhook/endpoint'
+                description: ''
+                properties:
+                  id:
+                    type: string
+                  created:
+                    type: number
+                    description: Time at which the object was created. Measured in seconds since the Unix epoch
+                  enable_events:
+                    type: array
+                    description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
+                    items:
+                      type: string
+                  is_enabled:
+                    type: boolean
+                    description: The status of the webhook. It can be enabled or disabled.
+                  url:
+                    type: string
+                    description: The URL of the webhook endpoint
+                x-tags:
+                  - Webhook Endpoints
       description: 'A webhook endpoint must have a url and a list of enabled_events. You may optionally specify the Boolean connect parameter. If set to true, then a Connect webhook endpoint that notifies the specified url about events from all connected accounts is created; otherwise an account webhook endpoint that notifies the specified url only about events from your account is created. You can also create webhook endpoints in the webhooks settings section of the Dashboard.'
       requestBody:
         content:
@@ -251,7 +496,20 @@ paths:
               type: object
               properties:
                 events:
-                  $ref: '#/components/schemas/Webhook-Events'
+                  type: string
+                  title: '| Webhook Events Enumeration'
+                  enum:
+                    - payment.status
+                    - merchant.status
+                  description: |-
+                    List of events a client can sign up for Webhook calls.
+
+                    | Value | Description |
+                    |--|--|
+                    | payment.status | Occurs whenever the status of a payment changes |
+                    | merchant.status | Occurs whenever the status of a merhant changes |
+                  x-tags:
+                    - Webhook Endpoints
                 url:
                   type: string
                 is_enabled:
@@ -278,7 +536,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Webhook-Endpoint'
+                title: '| Webhook Endpoint Object'
+                type: object
+                x-examples:
+                  Example:
+                    id: we_1Fya1E2eZvKYlo2COY23Yyij
+                    created: 1578472560
+                    enabled_events:
+                      - payment.status
+                      - merchant.status
+                    is_live: false
+                    is_enabled: true
+                    url: 'https://example.com/my/webhook/endpoint'
+                description: ''
+                properties:
+                  id:
+                    type: string
+                  created:
+                    type: number
+                    description: Time at which the object was created. Measured in seconds since the Unix epoch
+                  enable_events:
+                    type: array
+                    description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
+                    items:
+                      type: string
+                  is_enabled:
+                    type: boolean
+                    description: The status of the webhook. It can be enabled or disabled.
+                  url:
+                    type: string
+                    description: The URL of the webhook endpoint
+                x-tags:
+                  - Webhook Endpoints
       operationId: get-webhook-webhook_id
       description: Retrieves the webhook endpoint with the given ID
       tags:
@@ -301,7 +590,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Webhook-Endpoint'
+                title: '| Webhook Endpoint Object'
+                type: object
+                x-examples:
+                  Example:
+                    id: we_1Fya1E2eZvKYlo2COY23Yyij
+                    created: 1578472560
+                    enabled_events:
+                      - payment.status
+                      - merchant.status
+                    is_live: false
+                    is_enabled: true
+                    url: 'https://example.com/my/webhook/endpoint'
+                description: ''
+                properties:
+                  id:
+                    type: string
+                  created:
+                    type: number
+                    description: Time at which the object was created. Measured in seconds since the Unix epoch
+                  enable_events:
+                    type: array
+                    description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
+                    items:
+                      type: string
+                  is_enabled:
+                    type: boolean
+                    description: The status of the webhook. It can be enabled or disabled.
+                  url:
+                    type: string
+                    description: The URL of the webhook endpoint
+                x-tags:
+                  - Webhook Endpoints
       description: Edit a Webhook Endpoint
       parameters: []
       requestBody:
@@ -311,13 +631,100 @@ paths:
               type: object
               properties:
                 events:
-                  $ref: '#/components/schemas/Webhook-Events'
+                  type: string
+                  title: '| Webhook Events Enumeration'
+                  enum:
+                    - payment.status
+                    - merchant.status
+                  description: |-
+                    List of events a client can sign up for Webhook calls.
+
+                    | Value | Description |
+                    |--|--|
+                    | payment.status | Occurs whenever the status of a payment changes |
+                    | merchant.status | Occurs whenever the status of a merhant changes |
+                  x-tags:
+                    - Webhook Endpoints
                 is_enabled:
                   type: boolean
                 url:
                   type: string
       tags:
         - Webhook Endpoints
+  '/merchants/{merchant_id}/payments/{payment_id}':
+    parameters:
+      - type: string
+        name: merchant_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Lian Lian Merchant ID
+      - schema:
+          type: string
+        name: payment_id
+        in: path
+        required: true
+        description: Lian Lian Payment ID
+    get:
+      summary: Get Payment
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+              examples:
+                example-1:
+                  value:
+                    client_id: DIYE8DFYAU62ALSDOE
+                    status: success
+                    currency: USD
+                    amount: '19.85'
+                    note: rfb
+      operationId: get-merchants-merchant_id-payments-payment_id
+      requestBody: {}
+      description: "Get a Merchant's Payment Object including status."
+  '/merchants/{merchant_id}/payments/{client_id}':
+    parameters:
+      - type: string
+        name: merchant_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Lian Lian Merchant ID
+      - schema:
+          type: string
+        name: client_id
+        in: path
+        required: true
+        description: "Client's Payment ID"
+    get:
+      summary: Get Payment
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+              examples:
+                example-1:
+                  value:
+                    client_id: DIYE8DFYAU62ALSDOE
+                    status: success
+                    currency: USD
+                    amount: '19.85'
+                    note: rfb
+      operationId: get-merchants-merchant_id-payments-client_id
+      requestBody: {}
+      description: "Get a Merchant's Payment Object including status by Client's Payment ID."
 components:
   schemas:
     Merchant:
@@ -331,111 +738,96 @@ components:
       properties:
         id:
           type: string
-          description: Lian Lian ID of Merchant
+          description: |-
+            Lianlian Pay merchant ID. Merchant shall use this ID to contact Lianlian Pay for any payment issues.
+
+            Non-existant if `registraton_complete` is false.
         client_id:
           type: string
           description: "Client's ID for this Merchant"
         status:
-          $ref: '#/components/schemas/Registration-Status-Enumeration'
+          type: string
+          title: '| Registration Status Enumeration'
+          description: |-
+            State of merchant registration process.  One of:
+
+            | Value | Description |
+            |--------|------------|
+            | ongoing | Registration ongoing |
+            | need_info | Merchant must communicate with Lian Lian |
+            | success | Ready for delivery money to merchant |
+            | blocked | User has been blacklisted from receiving payments |
+          enum:
+            - pending
+            - need_info
+            - success
+            - fail
+            - redirect
+          x-tags:
+            - Merchants
         registration_url:
           type: string
-          description: 'URL to redirect merchant to in order to start or continue registration.  '
-        can_make_payment:
+          description: "URL to redirect merchant to in order to start registration on Lianlian Pay platform. \n \nNon-existent if `registration_complete` is true."
+        registraton_complete:
           type: boolean
-          description: Should client initiate payments to this merchant or not.  This is false only for status=blocked
+          description: |-
+            State of merchant registration process.  One of:
+
+            | Value | Description |
+            |--------|------------|
+            | true| Merchant registration complete, platform can issue payment to this merchant |
+            | false| Merchant registration not complete yet, platform cannot issue payment to this merchant |
         shop_url:
           type: string
+          description: "URL of Merchant's shop.  For some clients this URL is auto-generated from `client_id`"
         note:
           type: string
+          description: Human readable description of Merchant
       required:
-        - id
         - client_id
         - status
-        - can_make_payment
-    Payment:
-      title: '| Payment Object'
-      type: object
-      description: Payment object containing payment status
-      x-tags:
-        - Payments
-      properties:
-        id:
-          type: string
-        client_id:
-          type: string
-          description: Payment ID according to client
-        status:
-          $ref: '#/components/schemas/Payment-Status-Enumeration'
-        currency:
-          type: string
-          description: 3 letter code of currency used
-        amount:
-          type: string
-          description: Amount of payment in currency
-        note:
-          type: string
-          description: Note passed in for payment on POST
-      required:
-        - id
-        - client_id
-        - status
-        - currency
-        - amount
-        - note
-    Registration-Status-Enumeration:
-      type: string
-      title: '| Registration Status Enumeration'
-      description: |-
-        State of merchant registration process.  One of:
-
-        | Value | Description |
-        |--------|------------|
-        | redirect | Client should redirect user to Merchant.registration_url |
-        | ongoing | Registration ongoing |
-        | need_info | Merchant must communicate with Lian Lian |
-        | success | Ready for delivery money to merchant |
-        | blocked | User has been blacklisted from receiving payments |
-      enum:
-        - pending
-        - need_info
-        - success
-        - fail
-        - redirect
-      x-tags:
-        - Merchants
-    Payment-Status-Enumeration:
-      type: string
-      title: '| Payment Status Enumeration'
-      description: |-
-        State a Payment is in.  One of:
-
-        | Value | Description |
-        |--------|------------|
-        | ongoing | Money Debited. Payment ongoing normally |
-        | need_info | Money Debited. Merchant must communicate with Lian Lian |
-        | success | Money Debited. Payment complete |
-        | returned | Money Returned to client account |
-      enum:
-        - in_progress
-        - need_info
-        - success
-        - returned
-      x-tags:
-        - Payments
+        - registraton_complete
     Error:
       title: '| Error'
       type: object
+      description: |
+        This object is returned anytime a REST request returns HTTP status other than 2xx.
+      x-examples: {}
       properties:
         code:
           type: string
           description: Error code as described per API
+          enum:
+            - '154008'
+            - '154011'
+            - '154012'
+            - '154014'
+            - '154015'
+            - '154016'
+            - '154020'
+            - '400001'
+            - '400002'
+            - '400003'
+            - '400004'
+            - '400005'
+            - '400006'
+            - '401001'
+            - '401002'
+            - '401003'
+            - '401004'
+            - '401005'
+            - '403001'
+            - '403002'
+            - '403003'
+            - '404001'
+            - '404002'
+            - '500000'
         message:
           type: string
           description: Human readable message of error
       required:
         - code
         - message
-      description: This object is returned anytime a REST request returns HTTP status other than 2xx.
     Webhook-Endpoint:
       title: '| Webhook Endpoint Object'
       type: object
@@ -484,6 +876,54 @@ components:
         | merchant.status | Occurs whenever the status of a merhant changes |
       x-tags:
         - Webhook Endpoints
+    Payment:
+      title: '| Payment Object'
+      type: object
+      description: Payment object containing payment status
+      x-tags:
+        - Payments
+      properties:
+        id:
+          type: string
+          description: Lian Lian Payment ID
+        client_id:
+          type: string
+          description: "Client's ID for this payment"
+        status:
+          type: string
+          title: '| Payment Status Enumeration'
+          description: |-
+            State a Payment is in.  One of:
+
+            | Value | Description |
+            |--------|------------|
+            | ongoing | Money Debited. Payment ongoing normally |
+            | need_info | Money Debited. Merchant must communicate with Lian Lian |
+            | success | Money Debited. Payment complete |
+            | returned | Money Returned to client account |
+          enum:
+            - in_progress
+            - need_info
+            - success
+            - returned
+          x-tags:
+            - Payments
+        currency:
+          type: string
+          description: 3 letter code of currency used
+        amount:
+          type: string
+          description: Amount of payment in `currency`
+        note:
+          type: string
+          description: Human readable note passed into POST /payment
+      required:
+        - id
+        - client_id
+        - status
+        - currency
+        - amount
+        - note
   securitySchemes:
     Authorization:
       name: Developer Token
