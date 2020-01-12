@@ -26,7 +26,7 @@ paths:
                     registration_url: 'https://example.lianlianpay.com/register/SADIS1FYOAWEBRAILKRYF32'
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
                     note: test shope
-                    registration_status: false
+                    registration_complete: false
                     shop_name: dingdong
                     client_id: C28E07DA61381ECD
                     status: null
@@ -36,7 +36,7 @@ paths:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
                     note: test shope
-                    registration_status: true
+                    registration_complete: true
                     shop_name: dingdong
                     id: '8000002020101011234'
                     client_id: C28E07DA61381ECD
@@ -96,7 +96,7 @@ paths:
                   value:
                     code: '999995'
                     message: '[mercnant_id] is requried.'
-      description: "Starts asynchronous process of registering a new merchant with Lianlian Pay.  \n\nOn successful return, if `registration_status` is `false`, platform shall use `registration_url` to redirect the merchant to in order to begin the Lianlian Pay Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
+      description: "Starts asynchronous process of registering a new merchant with Lianlian Pay.  \n\nOn successful return, if `registration_complete` is `false`, platform shall use `registration_url` to redirect the merchant to in order to begin the Lianlian Pay Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
       requestBody:
         content:
           application/json:
@@ -149,7 +149,7 @@ paths:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
                     note: test shope
-                    registration_status: true
+                    registration_complete: true
                     shop_name: dingdong
                     id: '8000002020101011234'
                     client_id: C28E07DA61381ECD
@@ -183,7 +183,7 @@ paths:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
                     note: test shope
-                    registration_status: true
+                    registration_complete: true
                     shop_name: dingdong
                     id: '8000002020101011234'
                     client_id: C28E07DA61381ECD
