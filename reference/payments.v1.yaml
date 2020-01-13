@@ -21,7 +21,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Merchant'
               examples:
-                example-1:
+                Example 1:
                   value:
                     registration_url: 'https://example.lianlianpay.com/register/SADIS1FYOAWEBRAILKRYF32'
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
@@ -31,7 +31,7 @@ paths:
                     client_id: C28E07DA61381ECD
                     status: null
                     id: null
-                example-2:
+                Example 2:
                   value:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
@@ -42,60 +42,16 @@ paths:
                     client_id: C28E07DA61381ECD
                     status: success
         '400':
-          description: |-
+          description: |
             Codes:
 
             | Code | Description |
             |------|------------|
-            |999995 | Invalid Parameter|
+            |999995 | Invalid Parameter |
           content:
             application/json:
               schema:
-                title: '| Error'
-                type: object
-                description: |
-                  This object is returned anytime a REST request returns HTTP status other than 2xx.
-                x-examples: {}
-                properties:
-                  code:
-                    type: string
-                    description: Error code as described per API
-                    enum:
-                      - '154008'
-                      - '154011'
-                      - '154012'
-                      - '154014'
-                      - '154015'
-                      - '154016'
-                      - '154020'
-                      - '400001'
-                      - '400002'
-                      - '400003'
-                      - '400004'
-                      - '400005'
-                      - '400006'
-                      - '401001'
-                      - '401002'
-                      - '401003'
-                      - '401004'
-                      - '401005'
-                      - '403001'
-                      - '403002'
-                      - '403003'
-                      - '404001'
-                      - '404002'
-                      - '500000'
-                  message:
-                    type: string
-                    description: Human readable message of error
-                required:
-                  - code
-                  - message
-              examples:
-                example-1:
-                  value:
-                    code: '999995'
-                    message: '[mercnant_id] is requried.'
+                $ref: '#/components/schemas/Error'
       description: "Starts asynchronous process of registering a new merchant with Lianlian Pay.  \n\nOn successful return, if `registration_complete` is `false`, platform shall use `registration_url` to redirect the merchant to in order to begin the Lianlian Pay Registration Experience.  \n\nWhen registration is successfully completed the user will be redirected to the passed in `redirect_url`"
       requestBody:
         content:
@@ -144,7 +100,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Merchant'
               examples:
-                example-1:
+                Example:
                   value:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
@@ -178,7 +134,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Merchant'
               examples:
-                example-1:
+                Example:
                   value:
                     registration_url: null
                     shop_url: 'https://shop.xxxx.com/C28E07DA61381ECD'
@@ -211,7 +167,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
               examples:
-                example-1:
+                Example:
                   value:
                     client_id: DIYE8DFYAU62ALSDOE
                     status: ongoing
@@ -219,66 +175,25 @@ paths:
                     amount: '19.85'
                     note: rfb
         '400':
-          description: |-
+          description: |
             Codes:
 
             | Code | Description |
             |------|------------|
             |154008 | Client has insufficient balance to pay merchant|
             |154011 | Currency not supported|
-            |154015 | Duplicate payment `client_id`|
-            |?????? | Invalid `merchant_id`|
-            |?????? | Merchant is blocked from receiving payments|
-            |999995 | Invalid Parameter|
+            |154016 | Merchant is blocked from receiving payments|
+            |154015 | Duplicate payment `client_id` - *This is not the case if the original result is returend* |
           content:
             application/json:
               schema:
-                title: '| Error'
-                type: object
-                description: |
-                  This object is returned anytime a REST request returns HTTP status other than 2xx.
-                x-examples: {}
-                properties:
-                  code:
-                    type: string
-                    description: Error code as described per API
-                    enum:
-                      - '154008'
-                      - '154011'
-                      - '154012'
-                      - '154014'
-                      - '154015'
-                      - '154016'
-                      - '154020'
-                      - '400001'
-                      - '400002'
-                      - '400003'
-                      - '400004'
-                      - '400005'
-                      - '400006'
-                      - '401001'
-                      - '401002'
-                      - '401003'
-                      - '401004'
-                      - '401005'
-                      - '403001'
-                      - '403002'
-                      - '403003'
-                      - '404001'
-                      - '404002'
-                      - '500000'
-                  message:
-                    type: string
-                    description: Human readable message of error
-                required:
-                  - code
-                  - message
+                $ref: '#/components/schemas/Error'
               examples:
-                example-1:
+                Example:
                   value:
                     code: '154008'
                     message: Insufficient balance of client.
-      description: "Initiates a payment to specific merchant.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to merchant\n  If any issues arise, Lianlian Pay customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
+      description: "Initiates a payment to specific merchant.\n\nNote this call is Idempotent if sent with the same Signature or if sent with a new Signature but the same client_id.  In either case the original result will be sent back to the client whether the result was error or success.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to merchant\n  If any issues arise, Lianlian Pay customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
       tags:
         - Payments
       requestBody:
@@ -329,7 +244,7 @@ paths:
                     - currency
                     - Balance
               examples:
-                example-1:
+                Example:
                   value:
                     - currency: USD
                       balance: '4182.28'
@@ -346,48 +261,9 @@ paths:
           content:
             application/json:
               schema:
-                title: '| Error'
-                type: object
-                description: |
-                  This object is returned anytime a REST request returns HTTP status other than 2xx.
-                x-examples: {}
-                properties:
-                  code:
-                    type: string
-                    description: Error code as described per API
-                    enum:
-                      - '154008'
-                      - '154011'
-                      - '154012'
-                      - '154014'
-                      - '154015'
-                      - '154016'
-                      - '154020'
-                      - '400001'
-                      - '400002'
-                      - '400003'
-                      - '400004'
-                      - '400005'
-                      - '400006'
-                      - '401001'
-                      - '401002'
-                      - '401003'
-                      - '401004'
-                      - '401005'
-                      - '403001'
-                      - '403002'
-                      - '403003'
-                      - '404001'
-                      - '404002'
-                      - '500000'
-                  message:
-                    type: string
-                    description: Human readable message of error
-                required:
-                  - code
-                  - message
+                $ref: '#/components/schemas/Error'
               examples:
-                example-1:
+                Example:
                   value:
                     code: '154011'
                     message: Currency not support.
@@ -678,7 +554,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
               examples:
-                example-1:
+                Example:
                   value:
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
@@ -715,7 +591,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
               examples:
-                example-1:
+                Example:
                   value:
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
@@ -734,7 +610,7 @@ components:
         - Merchants
       description: Merchant object today focused on registration status
       x-examples:
-        example-1: {}
+        Example: {}
       properties:
         id:
           type: string

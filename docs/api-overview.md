@@ -128,6 +128,7 @@ One of ERROR CODES as described in table below
 
 
 ### HTTP STATUS CODE SUMMARY 
+
 |CODE | DESCRIPTION|
 |---------|----------|
 |200 | Bad Request	The request was unacceptable, often due to missing a required parameter.|
