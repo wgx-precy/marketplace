@@ -3,11 +3,9 @@ info:
   title: Payments
   version: '1.0'
   description: The Lian Lian Global Payments API is designed for Marketplaces to link their accounts with Lian Lian merchant accounts and send them cross currency payments.
-servers:
-  - url: 'https://api.sandbox.lianlianglobal.com/payments/v1'
-    description: Production
-  - url: 'https://api.lianlianglobal.com/payments/v1'
-    description: Sandbox
+  contact:
+    name: David Dawson
+    email: david.dawson@lianlian.com
 paths:
   /merchants:
     post:
@@ -111,12 +109,10 @@ paths:
                     client_id: C28E07DA61381ECD
                     status: success
       operationId: get-merchants-merchant.id
-      requestBody: {}
       description: Get information about the merchant - in particular their status on the Lianlian Pay platform.
   '/merchants/client_id/{client_id}':
     parameters:
-      - type: string
-        name: client_id
+      - name: client_id
         in: path
         required: true
         schema:
@@ -146,11 +142,9 @@ paths:
                     status: success
       operationId: get-merchants-lookup-client_id
       description: "Get information about the merchant based on the Client's ID for that merchant - in particular their status on the Lianlian Pay platform."
-      requestBody: {}
   '/merchants/{merchant_id}/payments':
     parameters:
-      - type: string
-        name: merchant_id
+      - name: merchant_id
         in: path
         required: true
         description: Lian Lian Merchant ID
@@ -218,7 +212,6 @@ paths:
                 - client_id
                 - currency
                 - amount
-        description: ''
   /balance:
     get:
       summary: Get Client Balance
@@ -287,38 +280,7 @@ paths:
               schema:
                 type: array
                 items:
-                  title: '| Webhook Endpoint Object'
-                  type: object
-                  x-examples:
-                    Example:
-                      id: we_1Fya1E2eZvKYlo2COY23Yyij
-                      created: 1578472560
-                      enabled_events:
-                        - payment.status
-                        - merchant.status
-                      is_live: false
-                      is_enabled: true
-                      url: 'https://example.com/my/webhook/endpoint'
-                  description: ''
-                  properties:
-                    id:
-                      type: string
-                    created:
-                      type: number
-                      description: Time at which the object was created. Measured in seconds since the Unix epoch
-                    enable_events:
-                      type: array
-                      description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
-                      items:
-                        type: string
-                    is_enabled:
-                      type: boolean
-                      description: The status of the webhook. It can be enabled or disabled.
-                    url:
-                      type: string
-                      description: The URL of the webhook endpoint
-                  x-tags:
-                    - Webhook Endpoints
+                  $ref: '#/components/schemas/Webhook-Endpoint'
       operationId: get-webhook
       description: Returns a list of your webhook endpoints
       tags:
@@ -344,7 +306,6 @@ paths:
                     is_live: false
                     is_enabled: true
                     url: 'https://example.com/my/webhook/endpoint'
-                description: ''
                 properties:
                   id:
                     type: string
@@ -372,11 +333,8 @@ paths:
               type: object
               properties:
                 events:
-                  type: string
+                  type: array
                   title: '| Webhook Events Enumeration'
-                  enum:
-                    - payment.status
-                    - merchant.status
                   description: |-
                     List of events a client can sign up for Webhook calls.
 
@@ -384,8 +342,11 @@ paths:
                     |--|--|
                     | payment.status | Occurs whenever the status of a payment changes |
                     | merchant.status | Occurs whenever the status of a merhant changes |
-                  x-tags:
-                    - Webhook Endpoints
+                  enum:
+                    - payment.status
+                    - merchant.status
+                  items:
+                    $ref: '#/components/schemas/Webhook-Events'
                 url:
                   type: string
                 is_enabled:
@@ -403,7 +364,7 @@ paths:
         name: webhook_id
         in: path
         required: true
-        description: ''
+        description: ID of Webhook Endpoint
     get:
       summary: Get Webhook Endpoint
       responses:
@@ -412,38 +373,7 @@ paths:
           content:
             application/json:
               schema:
-                title: '| Webhook Endpoint Object'
-                type: object
-                x-examples:
-                  Example:
-                    id: we_1Fya1E2eZvKYlo2COY23Yyij
-                    created: 1578472560
-                    enabled_events:
-                      - payment.status
-                      - merchant.status
-                    is_live: false
-                    is_enabled: true
-                    url: 'https://example.com/my/webhook/endpoint'
-                description: ''
-                properties:
-                  id:
-                    type: string
-                  created:
-                    type: number
-                    description: Time at which the object was created. Measured in seconds since the Unix epoch
-                  enable_events:
-                    type: array
-                    description: "The list of events to enable for this endpoint. ['*'] indicates that all events are enabled, except those that require explicit selection"
-                    items:
-                      type: string
-                  is_enabled:
-                    type: boolean
-                    description: The status of the webhook. It can be enabled or disabled.
-                  url:
-                    type: string
-                    description: The URL of the webhook endpoint
-                x-tags:
-                  - Webhook Endpoints
+                $ref: '#/components/schemas/Webhook-Endpoint'
       operationId: get-webhook-webhook_id
       description: Retrieves the webhook endpoint with the given ID
       tags:
@@ -454,9 +384,9 @@ paths:
       responses:
         '200':
           description: OK
-      description: ''
       tags:
         - Webhook Endpoints
+      description: Deletes webhook endpoint configuration
     put:
       summary: Modify Webhook Endpoint
       operationId: put-webhook-webhook_id
@@ -478,7 +408,6 @@ paths:
                     is_live: false
                     is_enabled: true
                     url: 'https://example.com/my/webhook/endpoint'
-                description: ''
                 properties:
                   id:
                     type: string
@@ -507,11 +436,8 @@ paths:
               type: object
               properties:
                 events:
-                  type: string
+                  type: array
                   title: '| Webhook Events Enumeration'
-                  enum:
-                    - payment.status
-                    - merchant.status
                   description: |-
                     List of events a client can sign up for Webhook calls.
 
@@ -519,8 +445,11 @@ paths:
                     |--|--|
                     | payment.status | Occurs whenever the status of a payment changes |
                     | merchant.status | Occurs whenever the status of a merhant changes |
-                  x-tags:
-                    - Webhook Endpoints
+                  enum:
+                    - payment.status
+                    - merchant.status
+                  items:
+                    $ref: '#/components/schemas/Webhook-Events'
                 is_enabled:
                   type: boolean
                 url:
@@ -529,18 +458,17 @@ paths:
         - Webhook Endpoints
   '/merchants/{merchant_id}/payments/{payment_id}':
     parameters:
-      - type: string
-        name: merchant_id
+      - name: merchant_id
         in: path
         required: true
         schema:
           type: string
         description: Lian Lian Merchant ID
-      - schema:
-          type: string
-        name: payment_id
+      - name: payment_id
         in: path
         required: true
+        schema:
+          type: string
         description: Lian Lian Payment ID
     get:
       summary: Get Payment
@@ -562,21 +490,19 @@ paths:
                     amount: '19.85'
                     note: rfb
       operationId: get-merchants-merchant_id-payments-payment_id
-      requestBody: {}
       description: "Get a Merchant's Payment Object including status."
   '/merchants/{merchant_id}/payments/client_id/{client_id}':
     parameters:
-      - type: string
-        name: merchant_id
+      - name: merchant_id
         in: path
         required: true
         schema:
           type: string
         description: Lian Lian Merchant ID
-      - schema:
-          type: string
-        name: client_id
+      - name: client_id
         in: path
+        schema:
+          type: string
         required: true
         description: "Client's Payment ID"
     get:
@@ -599,7 +525,6 @@ paths:
                     amount: '19.85'
                     note: rfb
       operationId: get-merchants-merchant_id-payments-clientid-client_id
-      requestBody: {}
       description: "Get a Merchant's Payment Object including status by Client's Payment ID."
 components:
   schemas:
@@ -717,7 +642,6 @@ components:
           is_live: false
           is_enabled: true
           url: 'https://example.com/my/webhook/endpoint'
-      description: ''
       properties:
         id:
           type: string
@@ -748,6 +672,7 @@ components:
 
         | Value | Description |
         |--|--|
+        | * | All events |
         | payment.status | Occurs whenever the status of a payment changes |
         | merchant.status | Occurs whenever the status of a merhant changes |
       x-tags:
@@ -800,8 +725,12 @@ components:
         - currency
         - amount
         - note
-  securitySchemes:
-    Authorization:
-      name: Developer Token
-      type: apiKey
-      in: header
+  securitySchemes: {}
+tags:
+  - name: Merchants
+  - name: Payments
+  - name: Webhook Endpoints
+  - name: Balance
+servers:
+  - url: 'https://api.lianlianglobal.com'
+    description: Production
