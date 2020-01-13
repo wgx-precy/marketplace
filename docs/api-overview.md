@@ -222,4 +222,6 @@ Stripe utilizes cursor-based pagination via the starting_after and ending_before
 
 You can configure webhook endpoints via the API to be notified about events that happen in your Lian Lian Group account.
 
+Note: The Webhook APIs are not implemented yet.  This is a Draft of the API design coming soon...
+
 
