@@ -727,10 +727,10 @@ components:
         - note
   securitySchemes: {}
 tags:
+  - name: Balance
   - name: Merchants
   - name: Payments
   - name: Webhook Endpoints
-  - name: Balance
 servers:
   - url: 'https://api.lianlianglobal.com'
     description: Production
