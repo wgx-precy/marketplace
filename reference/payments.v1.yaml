@@ -187,7 +187,7 @@ paths:
                   value:
                     code: '154008'
                     message: Insufficient balance of client.
-      description: "Initiates a payment to specific merchant.\n\nNote this call is Idempotent if sent with the same Signature or if sent with a new Signature but the same client_id.  In either case the original result will be sent back to the client whether the result was error or success.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n  Can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to merchant\n  If any issues arise, Lianlian Pay customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
+      description: "Initiates a payment to specific merchant.\n\nNote this call is Idempotent if sent with the same Signature or if sent with a new Signature but the same client_id.  In either case the original result will be sent back to the client whether the result was error or success.\n\nNote: This synchronous call, on success, only guarantees the money has been debited from the client account.  Actual payment takes too long to be done synchronously and will be completed within a few days typically.\n\nSteps within API:\n\n* **Money Debited** from client's account\n can fail from insufficient funds\n* **Verify Merchant Registration** information is valid\n  If Merchant is unknown, call fails\n  If Merchant status is `blocked`, call fails \n  If Registration process isn’t complete, API succeeds with appropriate status\n* **Send Money** to merchant\n  If any issues arise, Lianlian Pay customer support helps fix issues and finalize transfer\n\nCall returns payment object including payment status."
       tags:
         - Payments
       requestBody:
@@ -506,7 +506,7 @@ paths:
         required: true
         description: "Client's Payment ID"
     get:
-      summary: Get Payment
+      summary: Get Payment by Client ID
       tags:
         - Payments
       responses:
