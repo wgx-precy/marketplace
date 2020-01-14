@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Payments
+  title: Marketplace
   version: '1.0'
-  description: The Lian Lian Global Payments API is designed for Marketplaces to link their accounts with Lian Lian merchant accounts and send them cross currency payments.
+  description: The Lianlian Pay Marketplace API is designed for Marketplaces to link their accounts with Lianlian Pay merchant accounts and send them cross currency payments.
   contact:
     name: David Dawson
     email: david.dawson@lianlian.com
