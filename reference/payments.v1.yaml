@@ -6,6 +6,9 @@ info:
   contact:
     name: David Dawson
     email: david.dawson@lianlian.com
+servers:
+  - url: 'https://api.lianlianglobal.com'
+    description: Production
 paths:
   /merchants:
     post:
@@ -212,63 +215,6 @@ paths:
                 - client_id
                 - currency
                 - amount
-  /balance:
-    get:
-      summary: Get Client Balance
-      tags:
-        - Balance
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    currency:
-                      type: string
-                      description: 3 letter currency code
-                    balance:
-                      type: string
-                      description: Total balance for this currency
-                  required:
-                    - currency
-                    - Balance
-              examples:
-                Example:
-                  value:
-                    - currency: USD
-                      balance: '4182.28'
-                    - currency: CNY
-                      balance: '78.99'
-        '400':
-          description: |-
-            Codes:
-
-            | Code | Description |
-            |------|------------|
-            |154011 | Currency not supported|
-            |999995 | Invalid Parameter|
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                Example:
-                  value:
-                    code: '154011'
-                    message: Currency not support.
-      operationId: get-balance
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: currency
-          description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in.
-      description: "Returns Total balance of client's account within Lianlian Pay in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CNY."
-    parameters: []
   /webhook:
     get:
       summary: List All Webhook Endpoints
@@ -294,18 +240,8 @@ paths:
           content:
             application/json:
               schema:
-                title: '| Webhook Endpoint Object'
-                type: object
-                x-examples:
-                  Example:
-                    id: we_1Fya1E2eZvKYlo2COY23Yyij
-                    created: 1578472560
-                    enabled_events:
-                      - payment.status
-                      - merchant.status
-                    is_live: false
-                    is_enabled: true
-                    url: 'https://example.com/my/webhook/endpoint'
+                x-tags:
+                  - Webhook Endpoints
                 properties:
                   id:
                     type: string
@@ -323,8 +259,18 @@ paths:
                   url:
                     type: string
                     description: The URL of the webhook endpoint
-                x-tags:
-                  - Webhook Endpoints
+                x-examples:
+                  Example:
+                    id: we_1Fya1E2eZvKYlo2COY23Yyij
+                    created: 1578472560
+                    enabled_events:
+                      - payment.status
+                      - merchant.status
+                    is_live: false
+                    is_enabled: true
+                    url: 'https://example.com/my/webhook/endpoint'
+                type: object
+                title: '| Webhook Endpoint Object'
       description: 'A webhook endpoint must have a url and a list of enabled_events. You may optionally specify the Boolean connect parameter. If set to true, then a Connect webhook endpoint that notifies the specified url about events from all connected accounts is created; otherwise an account webhook endpoint that notifies the specified url only about events from your account is created. You can also create webhook endpoints in the webhooks settings section of the Dashboard.'
       requestBody:
         content:
@@ -333,8 +279,11 @@ paths:
               type: object
               properties:
                 events:
-                  type: array
-                  title: '| Webhook Events Enumeration'
+                  items:
+                    $ref: '#/components/schemas/Webhook-Events'
+                  enum:
+                    - payment.status
+                    - merchant.status
                   description: |-
                     List of events a client can sign up for Webhook calls.
 
@@ -342,11 +291,8 @@ paths:
                     |--|--|
                     | payment.status | Occurs whenever the status of a payment changes |
                     | merchant.status | Occurs whenever the status of a merhant changes |
-                  enum:
-                    - payment.status
-                    - merchant.status
-                  items:
-                    $ref: '#/components/schemas/Webhook-Events'
+                  title: '| Webhook Events Enumeration'
+                  type: array
                 url:
                   type: string
                 is_enabled:
@@ -384,9 +330,9 @@ paths:
       responses:
         '200':
           description: OK
+      description: Deletes webhook endpoint configuration
       tags:
         - Webhook Endpoints
-      description: Deletes webhook endpoint configuration
     put:
       summary: Modify Webhook Endpoint
       operationId: put-webhook-webhook_id
@@ -396,18 +342,8 @@ paths:
           content:
             application/json:
               schema:
-                title: '| Webhook Endpoint Object'
-                type: object
-                x-examples:
-                  Example:
-                    id: we_1Fya1E2eZvKYlo2COY23Yyij
-                    created: 1578472560
-                    enabled_events:
-                      - payment.status
-                      - merchant.status
-                    is_live: false
-                    is_enabled: true
-                    url: 'https://example.com/my/webhook/endpoint'
+                x-tags:
+                  - Webhook Endpoints
                 properties:
                   id:
                     type: string
@@ -425,8 +361,18 @@ paths:
                   url:
                     type: string
                     description: The URL of the webhook endpoint
-                x-tags:
-                  - Webhook Endpoints
+                x-examples:
+                  Example:
+                    id: we_1Fya1E2eZvKYlo2COY23Yyij
+                    created: 1578472560
+                    enabled_events:
+                      - payment.status
+                      - merchant.status
+                    is_live: false
+                    is_enabled: true
+                    url: 'https://example.com/my/webhook/endpoint'
+                type: object
+                title: '| Webhook Endpoint Object'
       description: Edit a Webhook Endpoint
       parameters: []
       requestBody:
@@ -436,8 +382,11 @@ paths:
               type: object
               properties:
                 events:
-                  type: array
-                  title: '| Webhook Events Enumeration'
+                  items:
+                    $ref: '#/components/schemas/Webhook-Events'
+                  enum:
+                    - payment.status
+                    - merchant.status
                   description: |-
                     List of events a client can sign up for Webhook calls.
 
@@ -445,11 +394,8 @@ paths:
                     |--|--|
                     | payment.status | Occurs whenever the status of a payment changes |
                     | merchant.status | Occurs whenever the status of a merhant changes |
-                  enum:
-                    - payment.status
-                    - merchant.status
-                  items:
-                    $ref: '#/components/schemas/Webhook-Events'
+                  title: '| Webhook Events Enumeration'
+                  type: array
                 is_enabled:
                   type: boolean
                 url:
@@ -526,6 +472,63 @@ paths:
                     note: rfb
       operationId: get-merchants-merchant_id-payments-clientid-client_id
       description: "Get a Merchant's Payment Object including status by Client's Payment ID."
+  /balance:
+    get:
+      summary: Get Client Balance
+      tags:
+        - Balance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    currency:
+                      type: string
+                      description: 3 letter currency code
+                    balance:
+                      type: string
+                      description: Total balance for this currency
+                  required:
+                    - currency
+                    - Balance
+              examples:
+                Example:
+                  value:
+                    - currency: USD
+                      balance: '4182.28'
+                    - currency: CNY
+                      balance: '78.99'
+        '400':
+          description: |-
+            Codes:
+
+            | Code | Description |
+            |------|------------|
+            |154011 | Currency not supported|
+            |999995 | Invalid Parameter|
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Example:
+                  value:
+                    code: '154011'
+                    message: Currency not support.
+      operationId: get-balance
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: currency
+          description: Repeat parameter to specify 1 or more 3 letter currency codes to return balance in.
+      description: "Returns Total balance of client's account within Lianlian Pay in one or more currencies.  Not specifying a currency will return the default currencies configured for client.  \n\nTypically this is USD & CNY."
+    parameters: []
 components:
   schemas:
     Merchant:
@@ -547,8 +550,14 @@ components:
           type: string
           description: "Client's ID for this Merchant"
         status:
-          type: string
-          title: '| Registration Status Enumeration'
+          x-tags:
+            - Merchants
+          enum:
+            - pending
+            - need_info
+            - success
+            - fail
+            - redirect
           description: |-
             State of merchant registration process.  One of:
 
@@ -558,17 +567,17 @@ components:
             | need_info | Merchant must communicate with Lian Lian |
             | success | Ready for delivery money to merchant |
             | blocked | User has been blacklisted from receiving payments |
-          enum:
-            - pending
-            - need_info
-            - success
-            - fail
-            - redirect
-          x-tags:
-            - Merchants
+          title: '| Registration Status Enumeration'
+          type: string
         registration_url:
           type: string
           description: "URL to redirect merchant to in order to start registration on Lianlian Pay platform. \n \nNon-existent if `registration_complete` is true."
+        shop_url:
+          type: string
+          description: "URL of Merchant's shop.  For some clients this URL is auto-generated from `client_id`"
+        note:
+          type: string
+          description: Human readable description of Merchant
         registraton_complete:
           type: boolean
           description: |-
@@ -578,12 +587,6 @@ components:
             |--------|------------|
             | true| Merchant registration complete, platform can issue payment to this merchant |
             | false| Merchant registration not complete yet, platform cannot issue payment to this merchant |
-        shop_url:
-          type: string
-          description: "URL of Merchant's shop.  For some clients this URL is auto-generated from `client_id`"
-        note:
-          type: string
-          description: Human readable description of Merchant
       required:
         - client_id
         - status
@@ -593,36 +596,19 @@ components:
       type: object
       description: |
         This object is returned anytime a REST request returns HTTP status other than 2xx.
+
+        | Code | Message |
+        |------|---------|
+        |154008 | Client has insufficient balance to pay merchant|
+        |154011 | Currency not supported|
+        |154016 | Merchant is blocked from receiving payments|
+        |154015 | Duplicate payment `client_id` - *This is not the case if the original result is returend* |
+        |999995 | Invalid Parameter|
       x-examples: {}
       properties:
         code:
           type: string
           description: Error code as described per API
-          enum:
-            - '154008'
-            - '154011'
-            - '154012'
-            - '154014'
-            - '154015'
-            - '154016'
-            - '154020'
-            - '400001'
-            - '400002'
-            - '400003'
-            - '400004'
-            - '400005'
-            - '400006'
-            - '401001'
-            - '401002'
-            - '401003'
-            - '401004'
-            - '401005'
-            - '403001'
-            - '403002'
-            - '403003'
-            - '404001'
-            - '404002'
-            - '500000'
         message:
           type: string
           description: Human readable message of error
@@ -691,8 +677,13 @@ components:
           type: string
           description: "Client's ID for this payment"
         status:
-          type: string
-          title: '| Payment Status Enumeration'
+          x-tags:
+            - Payments
+          enum:
+            - in_progress
+            - need_info
+            - success
+            - returned
           description: |-
             State a Payment is in.  One of:
 
@@ -702,13 +693,8 @@ components:
             | need_info | Money Debited. Merchant must communicate with Lian Lian |
             | success | Money Debited. Payment complete |
             | returned | Money Returned to client account |
-          enum:
-            - in_progress
-            - need_info
-            - success
-            - returned
-          x-tags:
-            - Payments
+          title: '| Payment Status Enumeration'
+          type: string
         currency:
           type: string
           description: 3 letter code of currency used
@@ -731,6 +717,3 @@ tags:
   - name: Merchants
   - name: Payments
   - name: Webhook Endpoints
-servers:
-  - url: 'https://api.lianlianglobal.com'
-    description: Production
