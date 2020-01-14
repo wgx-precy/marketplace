@@ -168,12 +168,12 @@ paths:
               examples:
                 Example:
                   value:
-                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
-                    status: success
+                    status: ongoing
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
         '400':
           description: |
             Codes:
@@ -433,12 +433,12 @@ paths:
               examples:
                 Example:
                   value:
-                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
       operationId: get-merchants-merchant_id-payments-payment_id
       description: "Get a Merchant's Payment Object including status."
   '/merchants/{merchant_id}/payments/client_id/{client_id}':
@@ -469,12 +469,12 @@ paths:
               examples:
                 Example:
                   value:
-                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
       operationId: get-merchants-merchant_id-payments-clientid-client_id
       description: "Get a Merchant's Payment Object including status by Client's Payment ID."
   /balance:
@@ -600,7 +600,7 @@ components:
       title: '| Error'
       type: object
       description: |
-        This object is returned anytime a REST request returns HTTP status other than 2xx.
+        This object is returned anytime a REST request returns HTTP status 400.
 
         | Code | Message |
         |------|---------|
