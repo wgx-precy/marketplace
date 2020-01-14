@@ -168,8 +168,9 @@ paths:
               examples:
                 Example:
                   value:
+                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
-                    status: ongoing
+                    status: success
                     currency: USD
                     amount: '19.85'
                     note: rfb
@@ -432,6 +433,7 @@ paths:
               examples:
                 Example:
                   value:
+                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
                     currency: USD
@@ -467,6 +469,7 @@ paths:
               examples:
                 Example:
                   value:
+                    id: '2020011302151304'
                     client_id: DIYE8DFYAU62ALSDOE
                     status: success
                     currency: USD
