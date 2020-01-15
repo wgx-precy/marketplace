@@ -165,7 +165,7 @@ All POST, PUT, and DELETE requests are idempotent for safely retrying requests w
 
 This is useful when an API call is disrupted in transit and you do not receive a response. For example, if a request to create a charge does not respond due to a network connection error, you can retry the request with the same idempotency key to guarantee that no more than one charge is created.
 
-LianLian's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeded or failed. Subsequent requests with the same BODY & Signature return the same result, except for internal 500 errors.
+LianLian's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeded or failed. Subsequent requests with the same BODY return the same result, except for internal 500 errors.
 
 # Request IDs
 
