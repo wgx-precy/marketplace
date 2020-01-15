@@ -4,7 +4,7 @@ The LianLian API is organized around REST. Our API has predictable resource-orie
 
 You can use it in test mode, which does not affect your live data or interact with the banking networks. The API key you use to authenticate the request determines whether the request is live mode or test mode.
 
-The Sandbox environment will be provided saperately.
+Sandbox environment will be provided saperately.
 
 # Versioning
 
@@ -61,7 +61,6 @@ POST&collections/v1/merchants&19879234&{"currency":"USD"}&attr1%3Dvalue1%26attr2
 
 You achieve this by concatenating:
 * The timestamp (Seconds elapsed since 1970/1/1 00:00:00 GMT as a string)
-* The character `,`
 * Use your RSA private key and calculate the string `BASE64(RSAwithSHA256(payload))` from Step 1
 
 ### Result Signature
@@ -133,27 +132,30 @@ One of ERROR CODES as described in table below
 
 |CODE | DESCRIPTION|
 |---------|----------|
-|200 | Bad Request	The request was unacceptable, often due to missing a required parameter.|
-|401 | Unauthorized	No valid API key provided.|
-|402 | Request Failed	The parameters were valid but the request failed.|
-|403 | Forbidden	The API key doesn't have permissions to perform the request.|
-|404 | Not Found	The requested resource doesn't exist.|
-|409 | Conflict	The request conflicts with another request (perhaps due to using the same idempotent key).|
-|429 | Too Many Requests	Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.|
-|500, 502, 503, 504 | Server Errors	Something went wrong on LianLian's end. (These are rare.)|
+|200 | Success. |
+|400 | API Error. Detailed error codes & error message are included in each API method.|
+|401 | Unauthorized.	No valid API key provided.|
+|403 | Forbidden.	The API key doesn't have permissions to perform the request.|
+|404 | Resource Not Found.	The requested resource doesn't exist.|
+|500 | Internal Server Error. Contact Lianlian Pay for technical support|
 
 
 ### ERROR CODES
-|STATUS | CODE | DESCRIPTION|
----------|---------|----------|
-|400 | 10004 | Not good|
+
+| Code | Message |
+|------|---------|
+|154008 | Client has insufficient balance to pay merchant|
+|154011 | Currency not supported|
+|154016 | Merchant is blocked from receiving payments|
+|154015 | Duplicate payment `client_id` - *This is not the case if the original result is returend* |
+|999995 | Invalid Parameter|
 
 ### Body
 
 ```
 {
-  "code": "10004",
-  "message": "Not good"
+  "code": "154008",
+  "message": "Client has insufficient balance to pay merchant"
 }
 ```
 
@@ -185,40 +187,6 @@ https://api...com/resource/?filter_by="filter"
 }
 ```
 
-# Pagination
-
-All top-level API resources have support for bulk fetches via "list" API methods. For instance, you can list charges, list customers, and list invoices. These list API methods share a common structure, taking at least these three parameters: limit, starting_after, and ending_before.
-
-Stripe utilizes cursor-based pagination via the starting_after and ending_before parameters. Both parameters take an existing object ID value (see below) and return objects in reverse chronological order. The ending_before parameter returns objects listed before the named object. The starting_after parameter returns objects listed after the named object. If both parameters are provided, only ending_before is used.
-
-#### Query Arguments
-
-| Argument | Details | Description |
-|---------|----------|-------------| 
-| limit | optional, default is 10 | A limit on the number of objects to be returned, between 1 and 100. |
-| starting_after | optional | A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list. |
-
-#### Paginated List Response Object
-
-| Field | Type | Description |
-| ---------|----------|-------|
-| data | array | An array containing the actual response elements, paginated by any request parameters. |
-| has_more | boolean | Whether or not there are more elements available after this set. If false, this set comprises the end of the list. |
-| starting_after | string | Next starting_after parameter to use for next page |
-| total | number | Total number of items in list |
-```
-{
-  "total": 252,
-  "has_more": true,
-  "staring_after": "token",
-  "has_more": true,
-  "list": [
-    {
-      "name": "Merchant Name"
-    }
-  ]
-}
-```
 
 # Webhook Endpoints
 

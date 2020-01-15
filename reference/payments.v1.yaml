@@ -1,14 +1,16 @@
 openapi: 3.0.0
 info:
-  title: Payments
+  title: Marketplace
   version: '1.0'
-  description: The Lian Lian Global Payments API is designed for Marketplaces to link their accounts with Lian Lian merchant accounts and send them cross currency payments.
+  description: The Lianlian Pay Marketplace API is designed for Marketplaces to link their accounts with Lianlian Pay merchant accounts and send them cross currency payments.
   contact:
     name: David Dawson
     email: david.dawson@lianlian.com
 servers:
-  - url: 'https://api.lianlianglobal.com'
+  - url: 'https://global-api.lianlianpay.com/marketplace'
     description: Production
+  - url: 'https://global-api-sandbox.lianlianpay.com/marketplace'
+    description: Sandbox
 paths:
   /merchants:
     post:
@@ -171,6 +173,7 @@ paths:
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
         '400':
           description: |
             Codes:
@@ -435,6 +438,7 @@ paths:
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
       operationId: get-merchants-merchant_id-payments-payment_id
       description: "Get a Merchant's Payment Object including status."
   '/merchants/{merchant_id}/payments/client_id/{client_id}':
@@ -470,6 +474,7 @@ paths:
                     currency: USD
                     amount: '19.85'
                     note: rfb
+                    id: '2020011302151304'
       operationId: get-merchants-merchant_id-payments-clientid-client_id
       description: "Get a Merchant's Payment Object including status by Client's Payment ID."
   /balance:
@@ -595,7 +600,7 @@ components:
       title: '| Error'
       type: object
       description: |
-        This object is returned anytime a REST request returns HTTP status other than 2xx.
+        This object is returned anytime a REST request returns HTTP status 400.
 
         | Code | Message |
         |------|---------|
